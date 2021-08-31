@@ -1,10 +1,15 @@
 package first.app.microservice.uuid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
+
+@Component
 @Configuration
 @ConfigurationProperties(prefix = "config.slf4filter")
 public class Slf4jMDCFilterConfiguration {
@@ -15,6 +20,8 @@ public class Slf4jMDCFilterConfiguration {
     private String responseHeader = DEFAULT_RESPONSE_TOKEN_HEADER;
     private String mdcTokenKey = DEFAULT_MDC_UUID_TOKEN_KEY;
     private String requestHeader = null;
+
+
 
     @Bean
     public FilterRegistrationBean servletRegistrationBean() {
