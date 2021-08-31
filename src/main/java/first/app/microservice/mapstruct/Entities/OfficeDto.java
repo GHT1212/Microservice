@@ -17,6 +17,9 @@ public class OfficeDto {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("code")
+    private String code;
+
 
     @JsonProperty("provider")
     private String provider;

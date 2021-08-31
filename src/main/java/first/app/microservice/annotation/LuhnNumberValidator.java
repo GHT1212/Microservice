@@ -5,7 +5,7 @@ import javax.validation.ConstraintValidatorContext;
 
 public class LuhnNumberValidator implements ConstraintValidator<Luhn , String>  {
     @Override
-    public void initialize(Luhn luhnnumber) {
+    public void initialize(Luhn luhn) {
     }
 
     @Override

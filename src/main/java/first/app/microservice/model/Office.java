@@ -30,8 +30,8 @@ public class Office {
 
     @Column(unique = true , updatable = false)
     @Size(min = 12)
-    @NotNull
     @Pattern(regexp = "[0-9]+")
+    @NotNull
     @Luhn
     private String code;
 

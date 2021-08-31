@@ -8,33 +8,37 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring" , uses = Office.class)
 public interface OfficeMapper {
 
-    @Mapping(qualifiedByName = "map", source = "provider.value.", target = "provider")
+    @Mapping(qualifiedByName = "map", source = "provider.value", target = "provider")
     OfficeDto officeToOfficeDto(Office office);
 
 
     @Mapping(qualifiedByName = "map", source = "officeDto.provider", target = "provider")
     Office officeDtoToOffice(OfficeDto officeDto);
 
+    List<OfficeDto> officesToOfficesDto(List<Office> offices);
+    List<Office> officesDtoToOffices(List<OfficeDto> officeDtos);
+
 
     @Named("map")
-    default Shops map(String value){
-          Shops shops = null;
+    default Shops map(String value) {
+        Shops shops = null;
 
-          switch (value){
-
-              case "aban-eshop":
-                  shops = Shops.ABAN_ESHOP;
-                  break;
-              case "huawei":
-                  shops = Shops.HUAWEI;
-                  break;
-              case "hami-mymci":
-                  shops = Shops.HAMI_MYMCI;
-                  break;
-          }
-          return shops;
+        switch (value) {
+            case "aban-eshop":
+                shops = Shops.ABAN_ESHOP;
+                break;
+            case "huawei":
+                shops = Shops.HUAWEI;
+                break;
+            case "hami-mymci":
+                shops = Shops.HAMI_MYMCI;
+                break;
+        }
+        return shops;
     }
 }
