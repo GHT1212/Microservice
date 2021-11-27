@@ -37,13 +37,19 @@ public class OfficeService {
         return offices;
 
     }
-
-    public String deleteById(Long id) {
+    public int deleteById(Long id) {
+        int status = 0;
         logger.info("Service: Fetching Office with id {}", id);
-        Optional<Office> office1 = Optional.ofNullable(officeRepository.findById(id).orElseThrow(() -> new OfficeNotFoundException(id)));
-        logger.info("Service: Deleting user with id {}", id);
-        officeRepository.deleteById(id);
-        return "Office is deleted";
+        //Optional<Office> office1 = Optional.ofNullable(officeRepository.findById(id).orElseThrow(() -> new OfficeNotFoundException(id)));
+        Optional<Office> office1 = officeRepository.findById(id);
+        if (office1.get().getId() != id)
+            status = 500;
+        else {
+            logger.info("Service: Deleting user with id {}", id);
+            officeRepository.deleteById(id);
+            status = 200;
+        }
+        return status;
     }
 
     public Office updateById(Long id, Office office) {

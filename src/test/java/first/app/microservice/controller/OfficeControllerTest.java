@@ -17,8 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -205,6 +204,97 @@ class OfficeControllerTest {
 //        verify(officeService ,times(1)).register(any(Office.class));
 //        verifyNoMoreInteractions(officeService);
     }
+    @Test
+    public void saveOfficeEntityWithNullCode_ThenReturnStatus500() throws JsonProcessingException, JSONException {
+        OfficeDto officeDto = new OfficeDto();officeDto.setId(1L);officeDto.setName("MohammadReza");officeDto.setCode("");officeDto.setProvider("aban-eshop");officeDto.setInactive(true);
+//        when(officeService.register(any(Office.class))).thenReturn(new Office());
+//        when(officeMapper.officeDtoToOffice(officeDto)).thenReturn(new Office());
+//        when(officeMapper.officeToOfficeDto(any(Office.class))).thenReturn(officeDto);
+
+        String Json = om.writeValueAsString(officeDto);
+
+        ResponseEntity<String> response = restTemplate.postForEntity("/office" , officeDto , String.class);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR , response.getStatusCode());
+        //JSONAssert.assertEquals(Json , response.getBody() , false);
+
+//        verify(officeService ,times(1)).register(any(Office.class));
+//        verifyNoMoreInteractions(officeService);
+    }
+    @Test
+    public void saveOfficeEntityWithNullProvider_ThenReturnStatus500() throws JsonProcessingException, JSONException {
+        OfficeDto officeDto = new OfficeDto();officeDto.setId(1L);officeDto.setName("MohammadReza");officeDto.setCode("6104337598632220");officeDto.setProvider("");officeDto.setInactive(true);
+//        when(officeService.register(any(Office.class))).thenReturn(new Office());
+//        when(officeMapper.officeDtoToOffice(officeDto)).thenReturn(new Office());
+//        when(officeMapper.officeToOfficeDto(any(Office.class))).thenReturn(officeDto);
+
+        String Json = om.writeValueAsString(officeDto);
+
+        ResponseEntity<String> response = restTemplate.postForEntity("/office" , officeDto , String.class);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR , response.getStatusCode());
+        //JSONAssert.assertEquals(Json , response.getBody() , false);
+
+//        verify(officeService ,times(1)).register(any(Office.class));
+//        verifyNoMoreInteractions(officeService);
+    }
+    @Test
+    public void DeleteById(){
+        Office office = new Office();office.setId(1L);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(HUAWEI);office.setInactive(true);
+
+        when(officeService.deleteById(office.getId())).thenReturn(200);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        HttpEntity<String> httpEntity = new HttpEntity(null , httpHeaders);
+
+        ResponseEntity<String> response = restTemplate.exchange("/office/1" , HttpMethod.DELETE, httpEntity ,String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        verify(officeService , times(1)).deleteById(anyLong());
+
+    }
+    @Test
+    public void sendWrongId_ThenReturnStatus400(){
+        Office office = new Office();office.setId(1L);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(HUAWEI);office.setInactive(true);
+
+        //doNothing().when(officeService).deleteById(office.getId());
+        when(officeService.deleteById(office.getId())).thenReturn(200);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        HttpEntity<String> httpEntity = new HttpEntity<>(null , httpHeaders);
+
+        ResponseEntity<String> response = restTemplate.exchange("/office/A" , HttpMethod.DELETE , httpEntity , String.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        // verify(officeService , times(1)).deleteById(anyLong());
+
+        //When We Use verify
+    }
+    @Test
+    public void sendWrongRequest_ThenReturnStatus404(){
+        Office office = new Office();office.setId(1L);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(HUAWEI);office.setInactive(true);
+
+        when(officeService.deleteById(office.getId())).thenReturn(200);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        HttpEntity<String> httpEntity = new HttpEntity<>(null , httpHeaders);
+
+        ResponseEntity<String> response = restTemplate.exchange("/office" + 2 , HttpMethod.DELETE , httpEntity , String.class);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+    }
+    @Test
+    public void sendInvalidId_ThenReturnStatus500(){
+        Office office = new Office();office.setId(1L);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(HUAWEI);office.setInactive(true);
+
+        //doNothing().when(officeService).deleteById(office.getId());
+        when(officeService.deleteById(2L)).thenReturn(500);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        HttpEntity<String> httpEntity = new HttpEntity<>(null , httpHeaders);
+
+        ResponseEntity<String> response = restTemplate.exchange("/office/2" , HttpMethod.DELETE , httpEntity , String.class);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+
+    }
+
 
 
 

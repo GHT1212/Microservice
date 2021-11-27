@@ -29,7 +29,7 @@ public class Office {
     private String name;
 
     @Column(unique = true , updatable = false)
-    @Size(min = 12)
+    @Size(min = 12 , max = 16)
     @Pattern(regexp = "[0-9]+")
     @NotNull(message = "code may not be null!")
     @Luhn

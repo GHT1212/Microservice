@@ -11,6 +11,7 @@ import first.app.microservice.service.OfficeService;
 import lombok.Data;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,11 +57,20 @@ public class OfficeController {
         return ResponseEntity.ok(officeDto);
     }
 
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity deleteById(@PathVariable Long id){
+//        logger.info("Controller: Finding user with id {}", id);
+//        officeService.deleteById(id);
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
     @DeleteMapping("/{id}")
     public ResponseEntity deleteById(@PathVariable Long id){
         logger.info("Controller: Finding user with id {}", id);
-        officeService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        int status = officeService.deleteById(id);
+        if (status == 200)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
