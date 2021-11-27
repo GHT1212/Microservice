@@ -24,19 +24,20 @@ public class Office {
 
     @Column(unique = true , updatable = true)
     @Size(min = 6 , max = 29)
-    @NotNull
+    @NotNull(message = "name may not be null!")
     @Pattern(regexp = "^[A-Za-z]+")
     private String name;
 
     @Column(unique = true , updatable = false)
     @Size(min = 12)
     @Pattern(regexp = "[0-9]+")
-    @NotNull
+    @NotNull(message = "code may not be null!")
     @Luhn
     private String code;
 
     @Column(updatable = true)
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "Your Choice for Provider Is Wrong!")
     private Shops provider;
 
     @Column(updatable = true)

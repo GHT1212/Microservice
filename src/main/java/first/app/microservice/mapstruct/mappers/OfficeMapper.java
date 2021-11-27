@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper(componentModel = "spring" , uses = Office.class)
 public interface OfficeMapper {

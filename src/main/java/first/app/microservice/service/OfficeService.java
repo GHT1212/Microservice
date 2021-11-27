@@ -1,6 +1,7 @@
 package first.app.microservice.service;
 import ch.qos.logback.classic.Logger;
 import first.app.microservice.MicroserviceApplication;
+import first.app.microservice.exception.OfficeNotFoundException;
 import first.app.microservice.model.Office;
 import first.app.microservice.repository.OfficeRepository;
 import org.slf4j.LoggerFactory;
@@ -11,10 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-
 public class OfficeService {
 
-    private OfficeRepository officeRepository;
+    private final OfficeRepository officeRepository;
 
     static final Logger logger = (Logger) LoggerFactory.getLogger(MicroserviceApplication.class);
 
@@ -26,9 +26,9 @@ public class OfficeService {
 
     public Office register(Office office) {
         logger.info("Service : Saving Office {}" , office.toString());
-        Office office1 = officeRepository.save(office);
-        logger.info("Service : Output for Register is {}" , office1.toString());
-        return office1;
+        officeRepository.save(office);
+        logger.info("Service : Output for Register is {}" , office.toString());
+        return office;
     }
 
     public List<Office> findAll() {
@@ -38,26 +38,33 @@ public class OfficeService {
 
     }
 
-    public void deleteById(Long id) {
+    public String deleteById(Long id) {
+        logger.info("Service: Fetching Office with id {}", id);
+        Optional<Office> office1 = Optional.ofNullable(officeRepository.findById(id).orElseThrow(() -> new OfficeNotFoundException(id)));
         logger.info("Service: Deleting user with id {}", id);
         officeRepository.deleteById(id);
+        return "Office is deleted";
     }
 
     public Office updateById(Long id, Office office) {
         logger.info("Service: Fetching Office with id {}", id);
-        Office tmpOffice = officeRepository.findById(id).get();
+        Optional<Office> office1 = Optional.ofNullable(officeRepository.findById(id).orElseThrow(() -> new OfficeNotFoundException(id)));
+        officeRepository.deleteById(id);
         logger.info("Service: Updating Office with id {}", id);
-        tmpOffice.setName(office.getName());
-        tmpOffice.setCode(office.getCode());
-        tmpOffice.setProvider(office.getProvider());
-        tmpOffice.setProvider(tmpOffice.getProvider());
-        officeRepository.save(tmpOffice);
-        return tmpOffice;
+        office.setId(id);
+        officeRepository.save(office);
+//        tmpOffice.get().setName(office.getName());
+//        tmpOffice.get().setCode(office.getCode());
+//        tmpOffice.get().setProvider(office.getProvider());
+//        tmpOffice.get().setInactive(office.isInactive());
+        officeRepository.save(office);
+        return office;
     }
 
     public Optional<Office> findById(Long id) {
         logger.info("Service: Finding Office with id {}", id);
-       Optional<Office> office = officeRepository.findById(id);
-       return office;
+        Optional<Office> office1 = Optional.ofNullable(officeRepository.findById(id).orElseThrow(() -> new OfficeNotFoundException(id)));
+        Optional<Office> office = officeRepository.findById(id);
+        return office;
     }
 }
