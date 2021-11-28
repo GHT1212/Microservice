@@ -284,7 +284,6 @@ class OfficeControllerTest {
     public void sendInvalidId_ThenReturnStatus500(){
         Office office = new Office();office.setId(1L);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(HUAWEI);office.setInactive(true);
 
-        //doNothing().when(officeService).deleteById(office.getId());
         when(officeService.deleteById(2L)).thenReturn(500);
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -294,6 +293,53 @@ class OfficeControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 
     }
+    @Test
+    public void updateOffice_ThenReturnStatus200() throws JsonProcessingException, JSONException {
+        Long id = 1L;
+        OfficeDto officeDto = new OfficeDto();officeDto.setId(1L);officeDto.setName("MohammadReza");officeDto.setCode("6104337598632220");officeDto.setProvider("aban-eshop");officeDto.setInactive(true);
+
+        Office office = new Office();office.setId(officeDto.getId());office.setName(officeDto.getName());office.setCode(officeDto.getCode());office.setProvider(ABAN_ESHOP);office.setInactive(officeDto.isInactive());
+
+
+        when(officeService.updateById(id,office)).thenReturn(new Office());
+        when(officeMapper.officeDtoToOffice(any(OfficeDto.class))).thenReturn(office);
+
+        String Json = om.writeValueAsString(officeDto);
+        HttpHeaders httpHeaders = new HttpHeaders();httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> httpEntity = new HttpEntity<>(Json , httpHeaders);
+
+        ResponseEntity<String> response = restTemplate.exchange("/office/1" , HttpMethod.PUT , httpEntity ,String.class);
+
+        assertEquals(HttpStatus.OK,response.getStatusCode());
+        //JSONAssert.assertEquals(Json,response.getBody(),false);/Because Nothing in the DataBase?
+
+        verify(officeService , times(1)).updateById(id , office);
+        //verifyNoMoreInteractions(officeService); Why We Use This?
+
+
+    }
+
+    @Test
+    public void updateOffice_WrongContentType_ReturnError415UnsupportedMediaType() throws JsonProcessingException, JSONException {
+        Long id = 1L;
+        OfficeDto officeDto = new OfficeDto();officeDto.setId(1L);officeDto.setName("MohammadReza");officeDto.setCode("6104337598632220");officeDto.setProvider("aban-eshop");officeDto.setInactive(true);
+
+        Office office = new Office();office.setId(officeDto.getId());office.setName(officeDto.getName());office.setCode(officeDto.getCode());office.setProvider(ABAN_ESHOP);office.setInactive(officeDto.isInactive());
+
+
+        when(officeService.updateById(id,office)).thenReturn(new Office());
+        when(officeMapper.officeDtoToOffice(any(OfficeDto.class))).thenReturn(office);
+
+        String Json = om.writeValueAsString(officeDto);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        HttpEntity<String> httpEntity = new HttpEntity<>(Json , httpHeaders);
+
+        ResponseEntity<String> response = restTemplate.exchange("/office/1" , HttpMethod.PUT , httpEntity ,String.class);
+
+        assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE,response.getStatusCode());
+
+    }
+
 
 
 

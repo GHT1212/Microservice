@@ -40,8 +40,7 @@ public class OfficeService {
     public int deleteById(Long id) {
         int status = 0;
         logger.info("Service: Fetching Office with id {}", id);
-        //Optional<Office> office1 = Optional.ofNullable(officeRepository.findById(id).orElseThrow(() -> new OfficeNotFoundException(id)));
-        Optional<Office> office1 = officeRepository.findById(id);
+        Optional<Office> office1 = Optional.ofNullable(officeRepository.findById(id).orElseThrow(() -> new OfficeNotFoundException(id)));
         if (office1.get().getId() != id)
             status = 500;
         else {
@@ -52,17 +51,23 @@ public class OfficeService {
         return status;
     }
 
-    public Office updateById(Long id, Office office) {
-        logger.info("Service: Fetching Office with id {}", id);
-        Optional<Office> office1 = Optional.ofNullable(officeRepository.findById(id).orElseThrow(() -> new OfficeNotFoundException(id)));
-        officeRepository.deleteById(id);
+//    public Office updateById(Long id, Office office) {
+//        logger.info("Service: Fetching Office with id {}", id);
+//        Optional<Office> office1 = Optional.ofNullable(officeRepository.findById(id).orElseThrow(() -> new OfficeNotFoundException(id)));
+//        officeRepository.deleteById(id);
+//        logger.info("Service: Updating Office with id {}", id);
+//        office.setId(id);
+//        officeRepository.save(office);
+////        tmpOffice.get().setName(office.getName());
+////        tmpOffice.get().setCode(office.getCode());
+////        tmpOffice.get().setProvider(office.getProvider());
+////        tmpOffice.get().setInactive(office.isInactive());
+//        officeRepository.save(office);
+//        return office;
+//    }
+    public Office updateById(Long id , Office office){
         logger.info("Service: Updating Office with id {}", id);
-        office.setId(id);
-        officeRepository.save(office);
-//        tmpOffice.get().setName(office.getName());
-//        tmpOffice.get().setCode(office.getCode());
-//        tmpOffice.get().setProvider(office.getProvider());
-//        tmpOffice.get().setInactive(office.isInactive());
+        officeRepository.deleteById(id);
         officeRepository.save(office);
         return office;
     }

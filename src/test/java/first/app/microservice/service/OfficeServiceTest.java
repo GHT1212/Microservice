@@ -12,15 +12,17 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import static first.app.microservice.enums.Shops.HUAWEI;
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static first.app.microservice.enums.Shops.ABAN_ESHOP;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
@@ -38,79 +40,65 @@ public class OfficeServiceTest {
         assertNotNull(officeService);
     }
 
+    @Test
+    public void findAllOffices_ReturnListOfOffices(){
+        Office office = new Office();office.setId(1L);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
+        Office office1 = new Office();office.setId(2L);office.setName("AliReza");office.setCode("6037991945200933");office.setProvider(HUAWEI);office.setInactive(true);
+
+        List<Office> offices = new ArrayList<>();
+
+        offices.add(office);
+        offices.add(office1);
+
+        for (Office validOffice:offices) {
+              officeService.register(validOffice);
+        }
+        when(officeRepository.findAll()).thenReturn(offices);
+
+        List<Office> actualOffices = officeService.findAll();
+
+        assertEquals(actualOffices , offices);
+    }
 
     @Test
-    public void saveOfficeTest(){
-        Office office = new Office();office.setId(1L);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
+    public void findOfficeById_ReturnOffice(){
+        Long id = 1L;
+        Office office = new Office();office.setId(id);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
 
+
+        when(officeRepository.save(office)).thenReturn(new Office());
+        when(officeRepository.findById(id)).thenReturn(Optional.of(office));
         officeService.register(office);
+        //what exacly when and then retuen do?
+
+        Optional<Office> actualOffice = officeService.findById(id);
+
+
+        assertEquals(actualOffice , Optional.of(office));
+    }
+    @Test
+    public void sendWrongId_ThenReturnOfficeNotFoundException(){
+        Long id = 1L;
+        Office office = new Office();office.setId(id);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
+
+        when(officeRepository.save(office)).thenReturn(new Office());
+        when(officeRepository.findById(id)).thenReturn(Optional.of(office));
+        officeService.register(office);
+
+        assertThatThrownBy(() -> {
+            officeService.findById(2L);
+        }).isInstanceOf(OfficeNotFoundException.class).hasMessageContaining("Could Not Find Office2");
+    }
+
+    @Test
+    public void saveOffice(){
+        Long id = 1L;
+        Office office = new Office();office.setId(id);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
 
         when(officeRepository.save(office)).thenReturn(new Office());
 
         assertNotNull(officeService.register(office));
-        assertEquals(Office.class, officeService.register(office).getClass());
-
-        //why it's not working? assertThat(officeService.findById(1L)).isEqualTo(1L); it doesn't find any entity?
-
-
-    }
-
-
-    @Test
-    public void getOfficeByIdTest(){
-        Office office = new Office();office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
-        officeService.register(office);
-        Optional<Office> office1 = officeService.findById(1L);
-
-        assertThat(office1).isNotNull();
-
-
-    }
-
-    @Test
-    public void getOfficeById(){
-        //Office office = new Office();office.setId(1L);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
-
-        assertThatThrownBy(() -> {
-            officeService.findById(1L);
-        }).isInstanceOf(OfficeNotFoundException.class).hasMessageContaining("Could Not Find Office1");
-    }
-
-
-    @Test
-    public void getListOfOffices(){
-        Office office = new Office();office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
-        officeService.register(office);
-        //Office office1 = new Office();office.setName("AliReza");office.setCode("6037991942473392");office.setProvider(ABAN_ESHOP);office.setInactive(true);
-        //officeService.register(office1);
-
-        List<Office> offices = officeService.findAll();
-
-        assertThat(offices.size()).isGreaterThan(0);
-    }
-
-    @Test
-    public void updateOffice(){
-        Office office = new Office();office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
-        officeService.register(office);
-        Office office1 = new Office();office1.setName("AliReza");office1.setCode("6104337598632220");office1.setProvider(ABAN_ESHOP);office1.setInactive(true);
-
-        Office office2 = officeService.updateById(1L , office1);
-
-        assertThat(office2.getName()).isEqualTo("AliReza");
-    }
-
-    @Test
-    public void updateOfficeOfficeNotFoundException(){
-        Office office = new Office();office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
-        officeService.register(office);
-        Office office1 = new Office();office1.setName("AliReza");office1.setCode("6104337598632220");office1.setProvider(ABAN_ESHOP);office1.setInactive(true);
-
-
-        assertThatThrownBy(() -> {
-            officeService.updateById(2L ,office1);
-        }).isInstanceOf(OfficeNotFoundException.class).hasMessageContaining("Could Not Find Office2");
-
+        assertEquals(Office.class,officeService.register(office).getClass());
     }
 
     @Test
@@ -124,10 +112,42 @@ public class OfficeServiceTest {
         }).isInstanceOf(OfficeNotFoundException.class).hasMessageContaining("Could Not Find Office1");
 
     }
+    @Test
+    public void deleteById(){
+        Long id = 1L;
+        Office office = new Office();office.setId(id);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
+
+        when(officeRepository.save(office)).thenReturn(new Office());
+        when(officeRepository.findById(id)).thenReturn(Optional.of(office));
+        officeService.register(office);
+
+        doNothing().when(officeRepository).deleteById(anyLong());
+
+        officeService.deleteById(office.getId());
+
+        verify(officeRepository, times(1)).deleteById(office.getId());
+    }
+    @Test
+    public void updateById(){
+        Long id = 1L;
+        Office office = new Office();office.setId(id);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
+        Office office1 = new Office();office.setName("AliReza");office.setCode("6037991945200933");office.setProvider(HUAWEI);office.setInactive(true);
+
+        when(officeRepository.save(any(Office.class))).thenReturn(new Office());
+        doNothing().when(officeRepository).deleteById(id);
+        when(officeService.updateById(id , office1)).thenReturn(office1);
+
+        officeService.register(office);
+        Office office2 =  officeService.updateById(id , office1);
+
+
+        assertEquals(office2 , office1);
+
+    }
 
     @Test
-    public void deleteByIdOfficeNotFoundException(){
-        Office office = new Office();office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
+    public void deleteByIdOfficeNotFoundStatus500(){
+        Office office = new Office();office.setId(1L);office.setName("MohammadReza");office.setCode("6104337598632220");office.setProvider(ABAN_ESHOP);office.setInactive(true);
         officeService.register(office);
 
         assertThatThrownBy(() -> {
